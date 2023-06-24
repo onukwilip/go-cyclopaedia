@@ -1,0 +1,121 @@
+body {
+  margin: 0;
+  height: 100vh;
+  width: 100vw;
+  background: #000 !important;
+  overflow-y: auto;
+  overflow-x: auto;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.app {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+code {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+.controls {
+  border-radius: 10px;
+  background: rgba(white, 0.5);
+  backdrop-filter: blur(10px);
+  width: auto;
+  max-width: 350px;
+  height: 200px;
+  padding: 10px;
+  position: absolute;
+  bottom: 1rem;
+  right: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  ul {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 7px;
+    li {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      cursor: pointer;
+      transition: 200ms;
+      img {
+        width: 30px;
+        height: auto;
+        filter: grayscale(100%);
+        transition: 200ms;
+      }
+      span {
+        text-transform: capitalize;
+      }
+      &:hover,
+      &.active {
+        transform: scale(1.1);
+        img {
+          filter: grayscale(0);
+        }
+      }
+    }
+  }
+}
+
+.fact-container {
+  border-radius: 10px;
+  background: rgba(white, 0.2);
+  backdrop-filter: blur(10px);
+  width: 60vw;
+  height: auto;
+  padding: 10px;
+  position: absolute;
+  bottom: 1rem;
+  right: 400px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  .facts {
+    span {
+      display: block;
+      font-size: 20px;
+      font-weight: bold;
+      text-align: center;
+      text-transform: capitalize;
+      margin-bottom: 10px;
+    }
+    border-radius: 10px;
+    background: rgba(white, 0.5);
+    backdrop-filter: blur(10px);
+    width: 100%;
+    height: auto;
+    padding: 10px;
+  }
+  .zoom {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    input {
+      width: 100%;
+      flex: 1;
+    }
+    span {
+      font-size: 20px;
+      color: white;
+    }
+  }
+}
