@@ -48,6 +48,7 @@ code {
     justify-content: space-between;
     gap: 7px;
     overflow-y: auto;
+    overflow-x: hidden;
     &::-webkit-scrollbar {
       width: 5px !important;
     }
@@ -137,6 +138,18 @@ code {
     width: 350px;
     right: 1rem;
     margin: 0 auto;
+    max-height: 50vh;
+    overflow-y: auto;
+    &::-webkit-scrollbar {
+      display: none !important;
+    }
+    .facts {
+      max-height: 50vh;
+      overflow-y: auto;
+      &::-webkit-scrollbar {
+        width: 5px !important;
+      }
+    }
   }
 }
 
