@@ -256,7 +256,7 @@ const SpaceScene: FC<{ refs: SpaceRefsType }> = ({
   return (
     <>
       <PerspectiveCamera makeDefault position={[0, 5, 2]} ref={cameraRef} />
-      <OrbitControls ref={orbitRef} maxZoom={1} minZoom={1} />
+      <OrbitControls ref={orbitRef} maxZoom={0.1} minZoom={1} />
       <Stars ref={starsRef} radius={150} />
       <MilkyWay
         ref={milkyWayRef}

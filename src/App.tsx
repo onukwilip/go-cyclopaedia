@@ -5,10 +5,11 @@ import React, {
   useMemo,
   FC,
   useState,
+  useEffect,
 } from "react";
 import { Canvas } from "react-three-fiber";
 import SpaceScene from "./components/Space";
-import { Checkbox, Input } from "semantic-ui-react";
+import { Checkbox, Icon, Input } from "semantic-ui-react";
 import { Context } from "./context/Context";
 import { Html } from "@react-three/drei";
 import sun from "./assets/images/icons8-sun-96.png";
@@ -25,6 +26,8 @@ import venus from "./assets/images/icons8-venus-64 (1).png";
 import { Planetmenu, checkBoxType } from "./types";
 import { Group, Object3D, Vector3 } from "three";
 import { OrbitControls as OrbitControlsImpl } from "three-stdlib";
+import useType from "./hooks/useType";
+import { motion, AnimatePresence, Variants } from "framer-motion";
 
 const PlanetsLinks: FC<{
   planets: Planetmenu[];
@@ -81,32 +84,79 @@ const descriptions: Record<string, string> = {
 const DescriptionComponent: FC<{
   selectedPlanet: string;
   onZoomRangeChange: (event: React.ChangeEvent<HTMLInputElement>) => void;
-}> = ({ selectedPlanet, onZoomRangeChange }) => {
-  const [seeMore, setSeeMore] = useState(false);
+  showDescription: Function;
+}> = ({ selectedPlanet, onZoomRangeChange, showDescription }) => {
+  const [seeMore, setSeeMore] = useState<boolean | undefined>(undefined);
+  const { typedText, isTypingComplete } = useType(
+    descriptions[selectedPlanet],
+    10,
+    500
+  );
+
+  const variants: Variants = {
+    down: {
+      opacity: 0.8,
+      y: 500,
+    },
+    visible: {
+      opacity: 1,
+      y: 0,
+    },
+    exit: {
+      opacity: 0.8,
+      y: 500,
+    },
+  };
+
+  useEffect(() => {
+    setSeeMore(undefined);
+  }, [selectedPlanet]);
+
   return (
-    <div className="fact-container">
+    <motion.div
+      className="fact-container"
+      variants={variants}
+      initial="down"
+      animate="visible"
+      exit="exit"
+      transition={{ bounce: false, easings: ["easeIn", "easeOut"] }}
+    >
+      <Icon name="cancel" onClick={() => showDescription(false)} />
       <div className="facts">
-        <span>{selectedPlanet}</span>
+        <span className="heading">{selectedPlanet}</span>
         {descriptions[selectedPlanet]?.length > 500 ? (
           <>
-            {seeMore ? (
+            {seeMore === true ? (
               <>
-                {descriptions[selectedPlanet]}{" "}
-                <a onClick={() => setSeeMore(false)} href="/#">
-                  See less
-                </a>
+                {descriptions[selectedPlanet]}&nbsp;
+                {isTypingComplete && (
+                  <a onClick={() => setSeeMore(false)} href="/#">
+                    See less
+                  </a>
+                )}
+              </>
+            ) : seeMore === false ? (
+              <>
+                {typedText}&nbsp;
+                {isTypingComplete && (
+                  <a onClick={() => setSeeMore(true)} href="/#">
+                    ...See more
+                  </a>
+                )}
               </>
             ) : (
               <>
-                {descriptions[selectedPlanet]?.slice(0, 500)}...{" "}
-                <a onClick={() => setSeeMore(true)} href="/#">
-                  See more
-                </a>
+                {typedText}&nbsp;
+                {isTypingComplete && (
+                  <a onClick={() => setSeeMore(true)} href="/#">
+                    ...See more
+                  </a>
+                )}
               </>
             )}
           </>
         ) : (
-          descriptions[selectedPlanet]
+          typedText
         )}
       </div>
       <div className="zoom">
@@ -120,7 +170,7 @@ const DescriptionComponent: FC<{
         />{" "}
         <span>+</span>
       </div>
-    </div>
+    </motion.div>
   );
 };
 
@@ -129,6 +179,7 @@ const App: React.FC<{}> = () => {
   const [selectedPlanet, setSelectedPlanet] = useState<string | undefined>(
     undefined
   );
+  const [showDescriptionView, setShowDescriptionView] = useState(true);
 
   // SPACE BODIES REFS
   const cameraRef = useRef<any>();
@@ -269,6 +320,7 @@ const App: React.FC<{}> = () => {
     objRef: React.RefObject<Object3D<Event>>
   ) => {
     if (orbitRef.current && objRef.current) {
+      context.setRevolve(false);
       orbitRef.current.target = ref?.current?.position || new Vector3(0, 0, 0);
       orbitRef.current.position0 =
         ref?.current?.position || new Vector3(0, 0, 0);
@@ -302,10 +354,13 @@ const App: React.FC<{}> = () => {
     orbitRef.current?.update();
   };
 
+  useEffect(() => {
+    setShowDescriptionView(true);
+  }, [selectedPlanet]);
+
   return (
     <div className="app">
       <Canvas shadows>
-        {/* <Three /> */}
         <Suspense
           fallback={
             <Html>
@@ -316,12 +371,16 @@ const App: React.FC<{}> = () => {
           <SpaceScene refs={refs} />
         </Suspense>
       </Canvas>
-      {selectedPlanet && (
-        <DescriptionComponent
-          selectedPlanet={selectedPlanet}
-          onZoomRangeChange={onZoomRangeChange}
-        />
-      )}
+      <AnimatePresence>
+        {selectedPlanet && showDescriptionView && (
+          <DescriptionComponent
+            selectedPlanet={selectedPlanet}
+            onZoomRangeChange={onZoomRangeChange}
+            showDescription={setShowDescriptionView}
+          />
+        )}
+      </AnimatePresence>
+
       <div className="controls" draggable>
         <div>
           <Checkbox
