@@ -6,10 +6,11 @@ import React, {
   FC,
   useState,
   useEffect,
+  forwardRef,
 } from "react";
 import { Canvas } from "react-three-fiber";
 import SpaceScene from "./components/Space";
-import { Checkbox, Icon, Input } from "semantic-ui-react";
+import { Checkbox, Icon } from "semantic-ui-react";
 import { Context } from "./context/Context";
 import { Html } from "@react-three/drei";
 import sun from "./assets/images/icons8-sun-96.png";
@@ -28,6 +29,13 @@ import { Group, Object3D, Vector3 } from "three";
 import { OrbitControls as OrbitControlsImpl } from "three-stdlib";
 import useType from "./hooks/useType";
 import { motion, AnimatePresence, Variants } from "framer-motion";
+import bg from "./assets/images/bg.jpg";
+import bluePlanet from "./assets/images/blue-planet.png";
+import redPlanet from "./assets/images/red-planet.png";
+import stars1 from "./assets/images/stars.png";
+import stars2 from "./assets/images/stars2.png";
+import spaceShip from "./assets/images/space-ship.png";
+import { gsap } from "gsap";
 
 const PlanetsLinks: FC<{
   planets: Planetmenu[];
@@ -174,7 +182,15 @@ const DescriptionComponent: FC<{
   );
 };
 
-const App: React.FC<{}> = () => {
+const SpaceSceneContainer = forwardRef<
+  HTMLDivElement,
+  {
+    style: React.CSSProperties;
+    className?: string;
+    onCancelClick: React.MouseEventHandler<HTMLElement>;
+    showScene: boolean;
+  }
+>(({ style, className, onCancelClick, showScene }, ref) => {
   const context = useContext(Context);
   const [selectedPlanet, setSelectedPlanet] = useState<string | undefined>(
     undefined
@@ -359,7 +375,11 @@ const App: React.FC<{}> = () => {
   }, [selectedPlanet]);
 
   return (
-    <div className="app">
+    <div
+      className={`space-scene-container ${className || ""}`}
+      style={style}
+      ref={ref}
+    >
       <Canvas shadows>
         <Suspense
           fallback={
@@ -380,7 +400,6 @@ const App: React.FC<{}> = () => {
           />
         )}
       </AnimatePresence>
-
       <div className="controls" draggable>
         <div>
           <Checkbox
@@ -408,6 +427,210 @@ const App: React.FC<{}> = () => {
           />
         </ul>
       </div>
+      {showScene && (
+        <div className="icon-container" onClick={onCancelClick}>
+          <i className="fas fa-xmark"></i>
+        </div>
+      )}
+    </div>
+  );
+});
+
+const App: React.FC<{}> = () => {
+  const spaceSceneContainerRef = useRef<HTMLDivElement>(null);
+  const spaceSceneContainerMobileRef = useRef<HTMLDivElement>(null);
+  const stars1Ref = useRef<HTMLImageElement>(null);
+  const stars2Ref = useRef<HTMLImageElement>(null);
+  const textContainerRef = useRef<HTMLDivElement>(null);
+
+  const [showScene, setShowScene] = useState(false);
+
+  const onExploreClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+    gsap.to(spaceSceneContainerRef.current, {
+      width: "100vw",
+      height: "100vh",
+      animationFillMode: "forwards",
+      borderRadius: 0,
+    });
+
+    setShowScene(true);
+  };
+
+  const onCancelClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
+    if (window.innerWidth > 1350)
+      gsap.to(spaceSceneContainerRef.current, {
+        width: "40vw",
+        height: "50vh",
+        animationFillMode: "forwards",
+        borderBottomLeftRadius: 10,
+      });
+
+    setShowScene(false);
+  };
+
+  const animateObjects = () => {
+    const timeline = gsap.timeline({ repeat: -1 });
+
+    timeline.to(".object", {
+      transform: "translateY(5px)",
+      ease: "power.out",
+    });
+    timeline.to(
+      ".object",
+      {
+        transform: "translateY(0px)",
+        ease: "power.out",
+      },
+      ">"
+    );
+  };
+
+  const animateStars = (e: MouseEvent) => {
+    const distanceFromCenterX = e.clientX - window.innerWidth / 2;
+
+    if (stars1Ref.current && stars2Ref.current) {
+      gsap.to(stars1Ref.current, {
+        transform: `translateX(-${
+          distanceFromCenterX * Number(stars1Ref.current.dataset.speedx || 0.1)
+        }px)`,
+        animationFillMode: "forwards",
+      });
+
+      gsap.to(stars2Ref.current, {
+        transform: `translateX(-${
+          distanceFromCenterX * Number(stars2Ref.current.dataset.speedx || 0.1)
+        }px)`,
+        animationFillMode: "forwards",
+      });
+    }
+  };
+
+  const initialAnimation = () => {
+    // TEXT ANIMATION
+    if (textContainerRef.current) {
+      Array.from(textContainerRef.current.children).forEach((elem, i) => {
+        gsap.from(elem, {
+          y: 50,
+          opacity: 0,
+          delay: i * 0.3,
+        });
+      });
+    }
+    // OBJECT ANIMATION
+    const objects = document.getElementsByClassName(
+      "object"
+    ) as HTMLCollectionOf<HTMLImageElement>;
+    Array.from(objects).forEach((object) => {
+      if (object.dataset.name === "bluePlanet") {
+        gsap.from(object, {
+          transform: "translateX(30rem)",
+          ease: "power.out",
+          delay: ((object?.dataset?.index as any) || 0) * 0.3,
+        });
+      } else if (object.dataset.name === "redPlanet") {
+        gsap.from(object, {
+          transform: "translateX(-30rem)",
+          ease: "power.out",
+          delay: ((object?.dataset?.index as any) || 0) * 0.3,
+        });
+      } else if (object.dataset.name === "spaceShip") {
+        gsap.from(object, {
+          transform: "translateY(-30rem)",
+          ease: "power.out",
+          delay: ((object?.dataset?.index as any) || 0) * 0.3,
+        });
+      }
+    });
+    setTimeout(animateObjects, 2000);
+  };
+
+  useEffect(() => {
+    initialAnimation();
+
+    window.addEventListener("mousemove", animateStars);
+    return () => {
+      window.removeEventListener("mousemove", animateStars);
+    };
+  }, []);
+
+  return (
+    <div className="app">
+      <Suspense
+        fallback={
+          <>
+            <div>Loading...</div>
+          </>
+        }
+      >
+        <>
+          {window.innerWidth > 1350 && (
+            <SpaceSceneContainer
+              style={{ width: "40vw", height: "50vh" }}
+              ref={spaceSceneContainerRef}
+              className="scace-scene-container-desktop"
+              onCancelClick={onCancelClick}
+              showScene={showScene}
+            />
+          )}
+          <div className="overlay"></div>
+          <img src={bg} alt="overlay" className="parallax" />
+          <img
+            src={stars1}
+            alt="stars1"
+            className="parallax stars1"
+            data-speedx={0.3}
+            ref={stars1Ref}
+          />
+          <img
+            src={stars2}
+            alt="stars2"
+            className="parallax stars2"
+            data-speedx={0.1}
+            ref={stars2Ref}
+          />
+          <img
+            src={bluePlanet}
+            alt="bluePlanet"
+            className="parallax object bluePlanet"
+            data-index={1}
+            data-name={"bluePlanet"}
+          />
+          <img
+            src={redPlanet}
+            alt="redPlanet"
+            className="parallax object redPlanet"
+            data-index={2}
+            data-name={"redPlanet"}
+          />
+          <img
+            src={spaceShip}
+            alt="spaceShip"
+            className="parallax object spaceShip"
+            data-index={3}
+            data-name={"spaceShip"}
+          />
+          <div className="text" ref={textContainerRef}>
+            <span>Hi! Welcome to </span>
+            <span>GOCYCLOPEDIA!</span>
+            <span>
+              An online encyclopaedia created with react three fiber, three js
+              and React Js
+            </span>
+            {/* <br /> */}
+            <button onClick={onExploreClick} style={{ opacity: 1 }}>
+              Explore
+            </button>
+          </div>
+          {window.innerWidth <= 1350 && showScene && (
+            <SpaceSceneContainer
+              style={{ width: "100vw", height: "100vh", borderRadius: 0 }}
+              ref={spaceSceneContainerMobileRef}
+              onCancelClick={onCancelClick}
+              showScene={showScene}
+            />
+          )}
+        </>
+      </Suspense>
     </div>
   );
 };

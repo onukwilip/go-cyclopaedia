@@ -1,22 +1,206 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,200;0,400;0,500;0,700;0,800;1,100;1,200&display=swap");
+
+$hide-scene-width: 1350px;
+
+@font-face {
+  font-family: "space";
+  src: url(./fonts/SolarSpaceDemoRegular-VGpqx.otf);
+}
+
+@mixin media($prefix, $size) {
+  @media (#{$prefix}-width: $size) {
+    @content;
+  }
+}
+
+@mixin media-h($prefix, $size) {
+  @media (#{$prefix}-height: $size) {
+    @content;
+  }
+}
+
 body {
   margin: 0;
   height: 100vh;
   width: 100vw;
   background: #000 !important;
   overflow: hidden;
+  font-family: Poppins;
 }
 
 * {
   box-sizing: border-box;
+  font-family: Poppins;
 }
 
 .app {
   width: 100vw;
   height: 100vh;
   display: flex;
-  align-items: center;
-  justify-content: center;
+  perspective: 1000px;
+  overflow-x: hidden;
   overflow-y: hidden;
+  position: relative;
+
+  img.parallax {
+    position: absolute;
+  }
+  .spaceShip {
+    top: -2rem;
+    left: -3rem;
+    width: 700px;
+    height: auto;
+  }
+  .bluePlanet {
+    bottom: 2rem;
+    right: 3rem;
+    width: 500px;
+    height: auto;
+  }
+  .redPlanet {
+    bottom: 4rem;
+    left: 5rem;
+    width: 250px;
+    height: auto;
+  }
+  .overlay {
+    width: 100vw;
+    height: 100vh;
+    background: radial-gradient(ellipse, rgba(black, 0.1), rgba(black, 0.3));
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+  }
+  .text {
+    z-index: 1;
+    color: white;
+    text-shadow: 0px 0px 5px rgba(black, 0.3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 1rem;
+    width: 60vw;
+    padding: 1rem;
+    span {
+      font-size: 34px;
+      font-weight: 100;
+      text-shadow: 0px 0px 20px rgba(black, 0.3);
+      &:nth-of-type(2) {
+        font-size: 60px;
+        font-family: "space";
+        background-image: url(./assets/images/galaxy.png);
+        background-clip: text;
+        color: transparent;
+        display: block;
+        line-height: 7rem;
+        @include media(max, 812px) {
+          font-size: 50px;
+        }
+        @include media(max, 675px) {
+          font-size: 7vw;
+        }
+      }
+      &:last-of-type {
+        font-size: 20px;
+        text-align: center;
+      }
+    }
+    button {
+      padding: 1.5rem 2rem;
+      width: 300px;
+      font-size: 20px;
+      border-radius: 50px;
+      text-transform: uppercase;
+      color: gold;
+      cursor: pointer;
+      opacity: 1;
+      transition: 200ms;
+      font-family: Poppins;
+      font-weight: 100;
+      background-image: url(./assets/images/galaxy.png);
+      background-repeat: no-repeat;
+      background-position: top;
+      border: none;
+      color: white;
+      &:hover {
+        transform: scale(1.1);
+      }
+    }
+
+    @include media(max, $hide-scene-width) {
+      width: 100vw;
+    }
+  }
+  .object {
+    // animation: animateObject 1s ease-out infinite forwards;
+  }
+  @include media(max, 800px) {
+    .overlay {
+      background: radial-gradient(ellipse, rgba(black, 0.2), rgba(black, 0.5));
+    }
+    .bluePlanet {
+      right: 0;
+      bottom: 0;
+      width: 300px;
+    }
+  }
+  @include media(max, 800px) {
+    .redPlanet {
+      left: 0;
+      bottom: 0;
+      width: 200px;
+    }
+  }
+  @include media(max, 440px) {
+    .redPlanet {
+      left: 0;
+      bottom: 15vh;
+      width: 150px;
+    }
+  }
+}
+.space-scene-container {
+  display: flex;
+  background: #000;
+  z-index: 2;
+  position: absolute;
+  overflow-y: hidden;
+  top: 0;
+  right: 0;
+  .icon-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin-top: 1rem;
+    margin-left: 1rem;
+    color: white !important;
+    z-index: 1;
+    font-family: Poppins;
+    font-weight: 100;
+    font-size: 20px;
+    width: 2rem;
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: rgba(white, 0.2);
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    transition: 200ms;
+    &:hover {
+      transform: scale(1.2);
+    }
+  }
+}
+.scace-scene-container-desktop {
+  border-bottom-left-radius: 10px;
+
+  @include media(max, $hide-scene-width) {
+    display: none;
+  }
 }
 
 code {
@@ -159,5 +343,17 @@ code {
     right: 5px;
     width: 96vw;
     max-width: auto;
+  }
+}
+
+@keyframes animateObject {
+  0% {
+    transform: translateY(5px);
+  }
+  50% {
+    transform: translateY(0px);
+  }
+  100% {
+    transform: translateY(5px);
   }
 }
