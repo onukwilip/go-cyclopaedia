@@ -35,7 +35,9 @@ import redPlanet from "./assets/images/red-planet.png";
 import stars1 from "./assets/images/stars.png";
 import stars2 from "./assets/images/stars2.png";
 import spaceShip from "./assets/images/space-ship.png";
+import astronout from "./assets/images/astronaut.png";
 import { gsap } from "gsap";
+import useLoadImage from "./hooks/useLoadImage";
 
 const PlanetsLinks: FC<{
   planets: Planetmenu[];
@@ -436,19 +438,40 @@ const SpaceSceneContainer = forwardRef<
   );
 });
 
+const Loader: React.FC = () => {
+  return (
+    <div className="loader">
+      <img src={astronout} alt="astronout" />
+      <span>LOADING...</span>
+    </div>
+  );
+};
+
 const App: React.FC<{}> = () => {
   const spaceSceneContainerRef = useRef<HTMLDivElement>(null);
   const spaceSceneContainerMobileRef = useRef<HTMLDivElement>(null);
   const stars1Ref = useRef<HTMLImageElement>(null);
   const stars2Ref = useRef<HTMLImageElement>(null);
   const textContainerRef = useRef<HTMLDivElement>(null);
+  const { loading } = useLoadImage({
+    images: [
+      bg,
+      bluePlanet,
+      redPlanet,
+      stars1,
+      stars2,
+      spaceShip,
+      "https://images.unsplash.com/photo-1674574124792-3be232f1957f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1470&q=80",
+      "https://images.unsplash.com/photo-1688461330948-48b0f365cec7?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=687&q=80",
+    ],
+  });
 
   const [showScene, setShowScene] = useState(false);
 
   const onExploreClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     gsap.to(spaceSceneContainerRef.current, {
-      width: "100vw",
-      height: "100vh",
+      width: "100dvw",
+      height: "100dvh",
       animationFillMode: "forwards",
       borderRadius: 0,
     });
@@ -459,8 +482,8 @@ const App: React.FC<{}> = () => {
   const onCancelClick: React.MouseEventHandler<HTMLButtonElement> = (e) => {
     if (window.innerWidth > 1350)
       gsap.to(spaceSceneContainerRef.current, {
-        width: "40vw",
-        height: "50vh",
+        width: "40dvw",
+        height: "50dvh",
         animationFillMode: "forwards",
         borderBottomLeftRadius: 10,
       });
@@ -555,13 +578,9 @@ const App: React.FC<{}> = () => {
 
   return (
     <div className="app">
-      <Suspense
-        fallback={
-          <>
-            <div>Loading...</div>
-          </>
-        }
-      >
+      {loading ? (
+        <Loader />
+      ) : (
         <>
           {window.innerWidth > 1350 && (
             <SpaceSceneContainer
@@ -630,7 +649,7 @@ const App: React.FC<{}> = () => {
             />
           )}
         </>
-      </Suspense>
+      )}
     </div>
   );
 };

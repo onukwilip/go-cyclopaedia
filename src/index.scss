@@ -133,9 +133,6 @@ body {
       width: 100vw;
     }
   }
-  .object {
-    // animation: animateObject 1s ease-out infinite forwards;
-  }
   @include media(max, 800px) {
     .overlay {
       background: radial-gradient(ellipse, rgba(black, 0.2), rgba(black, 0.5));
@@ -200,6 +197,26 @@ body {
 
   @include media(max, $hide-scene-width) {
     display: none;
+  }
+}
+.loader {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #000;
+  color: white;
+  flex-direction: column;
+  gap: 1rem;
+  img {
+    width: 300px;
+    height: auto;
+    animation: animateObject 1s ease-out infinite forwards;
+  }
+  span {
+    font-weight: 100;
+    font-size: 20px;
   }
 }
 

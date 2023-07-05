@@ -46,3 +46,7 @@ export type SpaceRefsType = {
   starsRef: React.RefObject<Object3D<Event>>;
   milkyWayRef: React.RefObject<Group>;
 };
+
+export type useLoadImageType = (params: { images: string[] }) => {
+  loading: boolean;
+};
