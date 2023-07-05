@@ -476,12 +476,12 @@ const App: React.FC<{}> = () => {
       borderRadius: 0,
     });
 
-    // if (window.innerWidth < 1350) {
-    //   exitAnimation();
+    if (window.innerWidth < 1350) {
+      exitAnimation();
 
-    //   setTimeout(() => setShowScene(true), 1000);
-    //   return;
-    // }
+      setTimeout(() => setShowScene(true), 1000);
+      return;
+    }
 
     setShowScene(true);
   };
@@ -496,6 +496,8 @@ const App: React.FC<{}> = () => {
       });
 
     setShowScene(false);
+
+    if (window.innerWidth <= 1350) restoreObjectsAnimation();
   };
 
   const animateObjects = () => {
@@ -535,7 +537,7 @@ const App: React.FC<{}> = () => {
     }
   };
 
-  const initialAnimation = () => {
+  const initialAnimation = (ignoreTimeout?: boolean) => {
     // TEXT ANIMATION
     if (textContainerRef.current) {
       Array.from(textContainerRef.current.children).forEach((elem, i) => {
@@ -571,7 +573,47 @@ const App: React.FC<{}> = () => {
         });
       }
     });
+
+    if (ignoreTimeout) return;
     setTimeout(animateObjects, 2000);
+  };
+
+  const restoreObjectsAnimation = () => {
+    // TEXT ANIMATION
+    if (textContainerRef.current) {
+      Array.from(textContainerRef.current.children).forEach((elem, i) => {
+        gsap.to(elem, {
+          y: 0,
+          opacity: 1,
+          delay: i * 0.3,
+        });
+      });
+    }
+    // OBJECT ANIMATION
+    const objects = document.getElementsByClassName(
+      "object"
+    ) as HTMLCollectionOf<HTMLImageElement>;
+    Array.from(objects).forEach((object) => {
+      if (object.dataset.name === "bluePlanet") {
+        gsap.to(object, {
+          transform: "translateX(0)",
+          ease: "power.out",
+          delay: ((object?.dataset?.index as any) || 0) * 0.3,
+        });
+      } else if (object.dataset.name === "redPlanet") {
+        gsap.to(object, {
+          transform: "translateX(0)",
+          ease: "power.out",
+          delay: ((object?.dataset?.index as any) || 0) * 0.3,
+        });
+      } else if (object.dataset.name === "spaceShip") {
+        gsap.to(object, {
+          transform: "translateY(0)",
+          ease: "power.out",
+          delay: ((object?.dataset?.index as any) || 0) * 0.3,
+        });
+      }
+    });
   };
 
   const exitAnimation = () => {
