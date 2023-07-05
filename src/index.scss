@@ -21,8 +21,8 @@ $hide-scene-width: 1350px;
 
 body {
   margin: 0;
-  height: 100vh;
-  width: 100vw;
+  height: 100dvh;
+  width: 100dvw;
   background: #000 !important;
   overflow: hidden;
   font-family: Poppins;
@@ -34,8 +34,8 @@ body {
 }
 
 .app {
-  width: 100vw;
-  height: 100vh;
+  width: 100dvw;
+  height: 100dvh;
   display: flex;
   perspective: 1000px;
   overflow-x: hidden;

@@ -476,6 +476,13 @@ const App: React.FC<{}> = () => {
       borderRadius: 0,
     });
 
+    // if (window.innerWidth < 1350) {
+    //   exitAnimation();
+
+    //   setTimeout(() => setShowScene(true), 1000);
+    //   return;
+    // }
+
     setShowScene(true);
   };
 
@@ -567,6 +574,48 @@ const App: React.FC<{}> = () => {
     setTimeout(animateObjects, 2000);
   };
 
+  const exitAnimation = () => {
+    // TEXT ANIMATION
+    if (textContainerRef.current) {
+      Array.from(textContainerRef.current.children).forEach((elem, i) => {
+        gsap.to(elem, {
+          y: 50,
+          opacity: 0,
+          delay: i * 0.3,
+          animationFillMode: "forwards",
+        });
+      });
+    }
+    // OBJECT ANIMATION
+    const objects = document.getElementsByClassName(
+      "object"
+    ) as HTMLCollectionOf<HTMLImageElement>;
+    Array.from(objects).forEach((object) => {
+      if (object.dataset.name === "bluePlanet") {
+        gsap.to(object, {
+          transform: "translateX(30rem)",
+          ease: "power.out",
+          delay: ((object?.dataset?.index as any) || 0) * 0.3,
+          animationFillMode: "forwards",
+        });
+      } else if (object.dataset.name === "redPlanet") {
+        gsap.to(object, {
+          transform: "translateX(-30rem)",
+          ease: "power.out",
+          delay: ((object?.dataset?.index as any) || 0) * 0.3,
+          animationFillMode: "forwards",
+        });
+      } else if (object.dataset.name === "spaceShip") {
+        gsap.to(object, {
+          transform: "translateY(-30rem)",
+          ease: "power.out",
+          delay: ((object?.dataset?.index as any) || 0) * 0.3,
+          animationFillMode: "forwards",
+        });
+      }
+    });
+  };
+
   useEffect(() => {
     initialAnimation();
 
@@ -584,7 +633,7 @@ const App: React.FC<{}> = () => {
         <>
           {window.innerWidth > 1350 && (
             <SpaceSceneContainer
-              style={{ width: "40vw", height: "50vh" }}
+              style={{ width: "40dvw", height: "50dvh" }}
               ref={spaceSceneContainerRef}
               className="scace-scene-container-desktop"
               onCancelClick={onCancelClick}
@@ -642,7 +691,7 @@ const App: React.FC<{}> = () => {
           </div>
           {window.innerWidth <= 1350 && showScene && (
             <SpaceSceneContainer
-              style={{ width: "100vw", height: "100vh", borderRadius: 0 }}
+              style={{ width: "100dvw", height: "100dvh", borderRadius: 0 }}
               ref={spaceSceneContainerMobileRef}
               onCancelClick={onCancelClick}
               showScene={showScene}
